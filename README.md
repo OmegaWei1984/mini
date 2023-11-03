@@ -13,7 +13,7 @@
     ```bash
     docker build -t mini_dev .
 
-    docker run -v $repo_dir:/mini_dev -it mini_dev
+    docker run -v $(pwd):/mini_dev -it mini_dev
     ```
 2. 启动容器
     ```
