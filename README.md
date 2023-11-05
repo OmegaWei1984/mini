@@ -106,6 +106,7 @@ struct sockaddr_in {
 
 同样还有对于 ipv6 的套接字地址
 ```c
+// netinet/in.h
 struct sockaddr_in6 {
     sa_family_t sin6_family;
     in_port_t sin6_port;    /* Transport layer port # */
@@ -122,6 +123,7 @@ struct sockaddr_in6 {
 
 最后还有 sockaddr_un 对于本地进程间通信的套接字地址
 ```c
+// sys/un.h
 struct sockaddr_un {
     unsigned short sun_family;
     char sun_path[108];
