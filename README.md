@@ -78,8 +78,8 @@ sockaddr 结构体是通用套接字地址，它有两个成员
 ```cpp
 //  sys/socket.h
 struct sockaddr {
-	sa_family_t sa_family;
-	char sa_data[14];
+    sa_family_t sa_family;
+    char sa_data[14];
 };
 ```
 
@@ -93,10 +93,10 @@ struct in_addr {
 };
 
 struct sockaddr_in {
-	sa_family_t sin_family;
-	in_port_t sin_port;
-	struct in_addr sin_addr;
-	uint8_t sin_zero[8];
+    sa_family_t sin_family;
+    in_port_t sin_port;
+    struct in_addr sin_addr;
+    uint8_t sin_zero[8];
 };
 ```
 - sin_family 协议族
@@ -108,10 +108,10 @@ struct sockaddr_in {
 ```c
 struct sockaddr_in6 {
     sa_family_t sin6_family;
-    in_port_t sin6_port;	/* Transport layer port # */
-    uint32_t sin6_flowinfo;	/* IPv6 flow information */
-    struct in6_addr sin6_addr;	/* IPv6 address */
-    uint32_t sin6_scope_id;	/* IPv6 scope-id */
+    in_port_t sin6_port;    /* Transport layer port # */
+    uint32_t sin6_flowinfo;    /* IPv6 flow information */
+    struct in6_addr sin6_addr;    /* IPv6 address */
+    uint32_t sin6_scope_id;    /* IPv6 scope-id */
 };
 ```
 - sin6_family 协议族
