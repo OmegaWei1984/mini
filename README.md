@@ -139,6 +139,54 @@ sockaddr 和 sockaddr_in
 - [Why do we cast sockaddr_in to sockaddr when calling bind()?](https://stackoverflow.com/questions/21099041/why-do-we-cast-sockaddr-in-to-sockaddr-when-calling-bind)
 - [Why does a cast from sockaddr_in to sockaddr work](https://stackoverflow.com/questions/51287930/why-does-a-cast-from-sockaddr-in-to-sockaddr-work)
 
+socket 通信流程
+```
+    client                       server
+      │                            │
+      │                            │
+      ▼                            ▼
+    socket                       socket
+      │                            │
+      │                            │
+      │                            ▼
+      │                           bind
+      │                            │
+      │                            │
+      ▼         handshake          ▼
+    connect ───────────────────► accept
+      │                            │
+      │                            │
+      ▼                            ▼
+    read                         read
+         ──────────────────────►
+     or                           or
+         ◄──────────────────────
+    write                        write
+      │                            │
+      │              ┌─────────────┤
+      ▼              │             │
+    close ───────────┘             │
+                                   ▼
+                                 close
+```
+
+创建套接字
+```c
+int socket (int domain, int type, int protocol);
+
+int fd = socket(PF_INET, SOCK_STREAM, 0);
+```
+
+- domain 协议域
+  - PF_INET
+  - PF_INET6
+  - PF_LOCAL
+- type 套接字类型
+  - SOCK_STREAM 字节流，对应 TCP
+  - SOCK_DGRAM 数据报，对应 UDP
+  - SOCK_RAW 原始套接字
+- protocol 协议，已废弃，一般使用 0
+
 ## 测试
 
 test
@@ -147,3 +195,7 @@ g++ -DBOOST_TEST_DYN_LINK test.cpp -lboost_unit_test_framework
 ```
 - [Docker —— 从入门到实践](https://yeasy.gitbook.io/docker_practice/)
 - [CMake菜谱 - 使用Boost Test进行单元测试](https://www.bookstack.cn/read/CMake-Cookbook/content-chapter4-4.4-chinese.md)
+
+## 参考
+
+[使用socket()函数创建套接字](https://xiaoxiami.gitbook.io/linux-server/socket/socket-xiang-guan-han-shu/shi-yong-socket-han-shu-chuang-jian-tao-jie-zi)
