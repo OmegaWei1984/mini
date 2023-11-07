@@ -187,6 +187,11 @@ int fd = socket(PF_INET, SOCK_STREAM, 0);
   - SOCK_RAW 原始套接字
 - protocol 协议，已废弃，一般使用 0
 
+将套接字绑定到地址
+```c
+int bind(int fd, sockaddr * addr, socklen_t len);
+```
+
 ## 测试
 
 test
