@@ -83,8 +83,8 @@ struct sockaddr {
 };
 ```
 
-sockaddr_in 结构体是对于 ipv4 的套接字地址，它有四个成员
-```c
+sockaddr_in 结构体是对于 ipv4 的套接字地址，它有四个成员。实际上 sockaddr_in 更为常用。
+```cpp
 // netinet/in.h
 typedef uint32_t in_addr_t;
 
@@ -100,12 +100,12 @@ struct sockaddr_in {
 };
 ```
 - sin_family 协议族
-- sin_addr 端口号
+- sin_port 端口号
 - sin_addr `in_addr` 结构的地址
 - sin_zero 占位，没有实际作用
 
 同样还有对于 ipv6 的套接字地址
-```c
+```cpp
 // netinet/in.h
 struct sockaddr_in6 {
     sa_family_t sin6_family;
@@ -122,7 +122,7 @@ struct sockaddr_in6 {
 - sin6_scope_id ipv6 域 id
 
 最后还有 sockaddr_un 对于本地进程间通信的套接字地址
-```c
+```cpp
 // sys/un.h
 struct sockaddr_un {
     unsigned short sun_family;
@@ -171,7 +171,7 @@ socket 通信流程
 ```
 
 创建套接字
-```c
+```cpp
 int socket (int domain, int type, int protocol);
 
 int fd = socket(PF_INET, SOCK_STREAM, 0);
@@ -188,8 +188,26 @@ int fd = socket(PF_INET, SOCK_STREAM, 0);
 - protocol 协议，已废弃，一般使用 0
 
 将套接字绑定到地址
-```c
+```cpp
 int bind(int fd, sockaddr * addr, socklen_t len);
+
+int ret = bind(fd, &addr, sizeof(addr));
+// 强制转换为 sockaddr
+int ret = bind(fd, (struct sockaddr *)&addr_in, sizeof(addr_in));
+```
+
+初始化 `sockaddr_in`
+
+可以直接使用通配地址 `INADDR_ANY` 进行地址的设置，
+```cpp
+addr_in.sin_addr.s_addr = htonl(INADDR_ANY);
+addr_in.sin_family = AF_INET;
+addr_in.sin_port = htons(port);
+```
+
+开始 listen
+```cpp
+int listen (int socketfd, int backlog);
 ```
 
 ## 测试
@@ -203,4 +221,5 @@ g++ -DBOOST_TEST_DYN_LINK test.cpp -lboost_unit_test_framework
 
 ## 参考
 
-[使用socket()函数创建套接字](https://xiaoxiami.gitbook.io/linux-server/socket/socket-xiang-guan-han-shu/shi-yong-socket-han-shu-chuang-jian-tao-jie-zi)
+- [使用socket()函数创建套接字](https://xiaoxiami.gitbook.io/linux-server/socket/socket-xiang-guan-han-shu/shi-yong-socket-han-shu-chuang-jian-tao-jie-zi)
+- [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/html/)
