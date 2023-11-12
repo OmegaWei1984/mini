@@ -16,9 +16,13 @@ int main(void)
     addr_in.sin_addr.s_addr = htonl(INADDR_ANY);
     // addr_in.sin_port = htons(0);
     addr_in.sin_port = htons(5001);
-    int ret2 = bind(fd, (struct sockaddr *)&addr_in, sizeof(addr_in));
+    int ret2 = bind(fd, (sockaddr *)&addr_in, sizeof(addr_in));
 
     listen(fd, 128);
+
+    sockaddr_in clientaddr;
+    socklen_t len = sizeof(addr_in);
+    int clientFd = accept(fd, (sockaddr *)&clientaddr, &len);
 
     return 0;
 }

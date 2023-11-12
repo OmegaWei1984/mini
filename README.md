@@ -208,6 +208,53 @@ addr_in.sin_port = htons(port);
 开始 listen
 ```cpp
 int listen (int socketfd, int backlog);
+int ret = listen(sockfd, backlog);
+```
+- socketfd，之前创建的套接字的 fd
+- backlog，已完成但是还没有 accept 的队列大小
+
+accept 客户端的连接请求
+```cpp
+int accept(int listensockfd, struct sockaddr *cliaddr, socklen_t *addrlen);
+int clientFd = accept(fd, &clientaddr, &len);
+```
+- listensockfd，listen 套接字的 fd
+- cliaddr，客户端套接字地址
+- addrlen，地址大小
+
+客户端 connect
+```cpp
+int connect(int sockfd, const struct sockaddr *servaddr, socklen_t addrlen);
+int ret = connect(clientFd, (sockaddr *)&servaddr, sizeof(serveraddr));
+```
+- sockfd，客户端创建的套接字的 fd
+- servaddr，服务器的套接字地址
+- addrlen，地址大小
+
+connect 的常见错误
+- TIMEOUT，没有建立三次握手，服务端 ip 本身不可达。
+- CONNECTION REFUSED，连接被服务端取消。可能端口错误，服务器上根本没有监听这个端口。
+
+TCP 三次握手流程
+```
+socket      │                │    socket,bind,listen
+            │                │
+            │                │
+            │                │
+connect     │     SYN i      │   accept
+SYN_SENT    ├───────────────►│   SYN_RCVD
+            │                │
+            │                │
+            │  SYN j,ACK i+1 │
+            │◄───────────────┤
+connect     │                │
+ESTABLISED  │                │
+            │    ACK j+1     │
+            ├───────────────►│   accept,read
+            │                │   ESTABLISED
+            │                │
+            │                │
+            │                │
 ```
 
 ## 测试
