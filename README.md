@@ -259,6 +259,7 @@ ESTABLISED  │                │
 
 使用套接字收发数据
 
+读
 ```cpp
 ssize_t read (int socketfd, void *buffer, size_t size);
 ```
