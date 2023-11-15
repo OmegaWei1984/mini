@@ -259,9 +259,18 @@ ESTABLISED  │                │
 
 使用套接字收发数据
 
+todo 缓冲区
+
 读
-```cpp
+```c
 ssize_t read (int socketfd, void *buffer, size_t size);
+```
+
+写
+```c
+ssize_t write (int socketfd, const void *buffer, size_t size)
+ssize_t send (int socketfd, const void *buffer, size_t size, int flags)
+ssize_t sendmsg(int sockfd, const struct msghdr *msg, int flags)
 ```
 
 ## 测试
