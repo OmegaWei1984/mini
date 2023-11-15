@@ -12,6 +12,7 @@ size_t readn(int fd, void *buffer, size_t size)
         int res = read(fd, buff, len);
 
         if (res < 0) {
+            //  EINTR: The call was interrupted by a signal before any data was read;
             if (errno == EINTR) {
                 continue;
             } else {
