@@ -234,6 +234,8 @@ int ret = connect(clientFd, (sockaddr *)&servaddr, sizeof(serveraddr));
 connect 的常见错误
 - TIMEOUT，没有建立三次握手，服务端 ip 本身不可达。
 - CONNECTION REFUSED，连接被服务端取消。可能端口错误，服务器上根本没有监听这个端口。
+  - 比如端口设置错误，需要使用 `htons` 进行转换
+    > htonl, htons, htonll, ntohl, ntohs, ntohll – convert values between host and network byte order
 
 TCP 三次握手流程
 ```
@@ -272,6 +274,33 @@ ssize_t write (int socketfd, const void *buffer, size_t size)
 ssize_t send (int socketfd, const void *buffer, size_t size, int flags)
 ssize_t sendmsg(int sockfd, const struct msghdr *msg, int flags)
 ```
+
+UDP
+读
+```c
+// sys/socket.h
+ssize_t recvfrom(int sockfd, void *buff, size_t nbytes, int flags, 
+　　　　　　　　　　struct sockaddr *from, socklen_t *addrlen); 
+```
+- sockfd 套接字 fd
+- buff 缓冲
+- nbytes 读取的最大数据字节
+- flags 标志
+- from 接收端套接字地址
+- addrlen 地址大小
+
+写
+```c
+// sys/socket.h
+ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags,
+                const struct sockaddr *to, socklen_t addrlen); 
+```
+- sockfd 套接字 fd
+- buff 缓冲
+- nbytes 读取的最大数据字节
+- flags 标志
+- to 发送端套接字地址
+- addrlen 地址大小
 
 ## 测试
 
