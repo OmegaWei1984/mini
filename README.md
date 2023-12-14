@@ -306,6 +306,8 @@ ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags,
 
 本地套接字地址的结构有所不同，需要设置套接字文件的路径 `sun_path`，进行进程间通信这个路径的文件必不可少（并非会向文件写入数据，只是这个文件代表两个进程之间产生了联系）。
 
+本地套接字可以使用 `SOCK_STREAM` 的 `read/write`，也可以使用 `SOCK_DGRAM` 的 `recvfrom/sendto`，很显然用法和 tcp、udp socket 的用法的类似。
+
 ## 测试
 
 test
