@@ -1,6 +1,24 @@
-# mini
-
 写一个小型的服务器作为使用 C++ 进行开发和网络编程的实践。
+
+- [依赖](#依赖)
+- [使用 docker](#使用-docker)
+- [基础 Part I](#基础-part-i)
+  - [网络连接](#网络连接)
+  - [Socket](#socket)
+    - [套接字地址](#套接字地址)
+    - [socket 通信流程](#socket-通信流程)
+      - [创建套接字](#创建套接字)
+      - [开始 listen](#开始-listen)
+      - [accept 客户端的连接请求](#accept-客户端的连接请求)
+      - [客户端 connect](#客户端-connect)
+    - [TCP 三次握手流程](#tcp-三次握手流程)
+    - [UDP](#udp)
+    - [本地套接字](#本地套接字)
+- [基础 Part II](#基础-part-ii)
+  - [TIME\_WAIT](#time_wait)
+- [测试](#测试)
+- [参考](#参考)
+
 
 ## 依赖
 
@@ -22,9 +40,9 @@
     docker attach container_id
     ```
 
-# note
+## 基础 Part I
 
-## 计算机网络基础知识
+### 网络连接
 
 Q：如何确定客户端和服务器的连接？
 
@@ -63,9 +81,11 @@ TCP/IP 模型中重要的两个传输层协议
 
 todo：关于 TCP 流的相关讨论
 
+### Socket
+
 Soeket 即套接字，可以理解为上层对网络连接的抽象。
 
-套接字地址
+#### 套接字地址
 
 sockaddr 结构体是通用套接字地址，它有两个成员
 - sa_family 地址族
@@ -139,7 +159,7 @@ sockaddr 和 sockaddr_in
 - [Why do we cast sockaddr_in to sockaddr when calling bind()?](https://stackoverflow.com/questions/21099041/why-do-we-cast-sockaddr-in-to-sockaddr-when-calling-bind)
 - [Why does a cast from sockaddr_in to sockaddr work](https://stackoverflow.com/questions/51287930/why-does-a-cast-from-sockaddr-in-to-sockaddr-work)
 
-socket 通信流程
+#### socket 通信流程
 ```
     client                       server
       │                            │
@@ -170,7 +190,7 @@ socket 通信流程
                                  close
 ```
 
-创建套接字
+##### 创建套接字
 ```cpp
 int socket (int domain, int type, int protocol);
 
@@ -205,7 +225,8 @@ addr_in.sin_family = AF_INET;
 addr_in.sin_port = htons(port);
 ```
 
-开始 listen
+##### 开始 listen
+
 ```cpp
 int listen (int socketfd, int backlog);
 int ret = listen(sockfd, backlog);
@@ -213,7 +234,7 @@ int ret = listen(sockfd, backlog);
 - socketfd，之前创建的套接字的 fd
 - backlog，已完成但是还没有 accept 的队列大小
 
-accept 客户端的连接请求
+##### accept 客户端的连接请求
 ```cpp
 int accept(int listensockfd, struct sockaddr *cliaddr, socklen_t *addrlen);
 int clientFd = accept(fd, &clientaddr, &len);
@@ -222,7 +243,7 @@ int clientFd = accept(fd, &clientaddr, &len);
 - cliaddr，客户端套接字地址
 - addrlen，地址大小
 
-客户端 connect
+##### 客户端 connect
 ```cpp
 int connect(int sockfd, const struct sockaddr *servaddr, socklen_t addrlen);
 int ret = connect(clientFd, (sockaddr *)&servaddr, sizeof(serveraddr));
@@ -237,7 +258,7 @@ connect 的常见错误
   - 比如端口设置错误，需要使用 `htons` 进行转换
     > htonl, htons, htonll, ntohl, ntohs, ntohll – convert values between host and network byte order
 
-TCP 三次握手流程
+#### TCP 三次握手流程
 ```
 socket      │                │    socket,bind,listen
             │                │
@@ -275,7 +296,7 @@ ssize_t send (int socketfd, const void *buffer, size_t size, int flags)
 ssize_t sendmsg(int sockfd, const struct msghdr *msg, int flags)
 ```
 
-UDP
+#### UDP
 读
 ```c
 // sys/socket.h
@@ -302,13 +323,15 @@ ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags,
 - to 发送端套接字地址
 - addrlen 地址大小
 
-本地套接字
+#### 本地套接字
 
 本地套接字地址的结构有所不同，需要设置套接字文件的路径 `sun_path`，进行进程间通信这个路径的文件必不可少（并非会向文件写入数据，只是这个文件代表两个进程之间产生了联系）。
 
 本地套接字可以使用 `SOCK_STREAM` 的 `read/write`，也可以使用 `SOCK_DGRAM` 的 `recvfrom/sendto`，很显然用法和 tcp、udp socket 的用法的类似。
 
-TIME_WAIT
+## 基础 Part II
+
+### TIME_WAIT
 
 在 TCP 连接断开进行四次挥手后，有一段时间 `TIME_WAIT` 后才会完全关闭，这是为了等待由于种种原因而产生的异常的报文自行消失的时间而设计的。因为这种报文的连接四元组与正常的完全相同，会干扰正常的 TCP 连接。但是这个 `TIME_WAIT` 同时也会占用服务器的端口和内存资源，所以需要对它进行优化。（在 TCP 拓展规范中有时间戳，通过时间戳可以判断是否为异常的报文）
 
