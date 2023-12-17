@@ -4,7 +4,7 @@
 - [使用 docker](#使用-docker)
 - [基础 Part I](#基础-part-i)
   - [网络连接](#网络连接)
-  - [Socket](#socket)
+  - [套接字 Socket](#套接字-socket)
     - [套接字地址](#套接字地址)
     - [socket 通信流程](#socket-通信流程)
       - [创建套接字](#创建套接字)
@@ -12,10 +12,14 @@
       - [accept 客户端的连接请求](#accept-客户端的连接请求)
       - [客户端 connect](#客户端-connect)
     - [TCP 三次握手流程](#tcp-三次握手流程)
+    - [TCP 四次挥手](#tcp-四次挥手)
+  - [使用套接字收发数据](#使用套接字收发数据)
+    - [TCP](#tcp)
     - [UDP](#udp)
     - [本地套接字](#本地套接字)
 - [基础 Part II](#基础-part-ii)
   - [TIME\_WAIT](#time_wait)
+  - [关闭 TCP](#关闭-tcp)
 - [测试](#测试)
 - [参考](#参考)
 
@@ -81,7 +85,7 @@ TCP/IP 模型中重要的两个传输层协议
 
 todo：关于 TCP 流的相关讨论
 
-### Socket
+### 套接字 Socket
 
 Soeket 即套接字，可以理解为上层对网络连接的抽象。
 
@@ -280,9 +284,11 @@ ESTABLISED  │                │
             │                │
 ```
 
-使用套接字收发数据
+#### TCP 四次挥手
 
-todo 缓冲区
+### 使用套接字收发数据
+
+#### TCP
 
 读
 ```c
@@ -342,6 +348,10 @@ ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags,
 - 调整 `net.ipv4.tcp_max_tw_buckets` 参数控制最大 `TIME_WAIT` 状态连接的数量，当超过这个值系统会将所有 `TIME_WAIT` 状态的连接，但是这样调整可能会产生多问题
 - 调低 `TCP_TIMEWAIT_LEN`，这个参数控制 `TIME_WAIT` 的时长，但是调整这个参数需要重新编译内核。
 - SO_LINGER 套接字选项的设置，`l_onoff` 非 0 ，在 close 后会经过 `l_linger` 设置的计时结束后发送 RST，这个连接会跳过四次挥手和 `TIME_WAIT`，但是这样会导致还在排队的数据不会被发送完毕，被关闭的一端没有经过挥手，在 recv 时才能得知被 RST 了。
+
+### 关闭 TCP
+
+
 
 ## 测试
 
