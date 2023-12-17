@@ -286,6 +286,35 @@ ESTABLISED  │                │
 
 #### TCP 四次挥手
 
+```
+client                            server
+            │                 │
+            │                 │
+ESTABLISHED │       FIN       │   ESTABLISHED
+            ├────────────────►│
+            │                 │
+FIN_WAIT_1  │                 │
+            │       ACK       │
+            │◄────────────────┤
+            │                 │
+FIN_WAIT_2  │                 │   CLOSE_WAIT
+            │       FIN       │
+            │◄────────────────┤
+            │                 │
+            │                 │   LAST_ACK
+            │       ACk       │
+            ├────────────────►│
+            │                 │
+TIME_WAIT   │                 │   CLOSE
+            │                 │
+            │                 │
+2MSL        │                 │
+            │                 │
+            │                 │
+CLOSE       │                 │
+            │                 │
+```
+
 ### 使用套接字收发数据
 
 #### TCP
