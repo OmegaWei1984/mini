@@ -20,6 +20,8 @@
 - [基础 Part II](#基础-part-ii)
   - [TIME\_WAIT](#time_wait)
   - [关闭 TCP](#关闭-tcp)
+    - [close](#close)
+    - [shutdown](#shutdown)
 - [测试](#测试)
 - [参考](#参考)
 
@@ -380,7 +382,30 @@ ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags,
 
 ### 关闭 TCP
 
+#### [close](https://man7.org/linux/man-pages/man2/close.2.html)
 
+使用 `close` 关闭套接字的 fd，如果是 fd 的最后一个引用，才会真正释放相关资源。
+
+返回 `0` 代表成功，`-1` 代表出错
+
+- [How is "multiple file descriptors refer to the same socket" created?](https://unix.stackexchange.com/questions/621373/how-is-multiple-file-descriptors-refer-to-the-same-socket-created)
+- [How Linux creates sockets and counts them](https://ops.tips/blog/how-linux-creates-sockets/)
+
+```cpp
+#include <unistd.h>
+int close(int fd);
+```
+
+#### [shutdown](https://man7.org/linux/man-pages/man2/shutdown.2.html)
+
+使用 `shutdown` 函数会关闭 fd 关联的套接字上的全部或部分全双工连接被关闭，参数 `how` 有三种选项 `SHUT_RD` `SHUT_WR` `SHUT_RDWR`
+
+返回 `0` 代表成功，`-1` 代表出错
+
+```cpp
+#include <sys/socket.h>
+int shutdown(int sockfd, int how);
+```
 
 ## 测试
 
