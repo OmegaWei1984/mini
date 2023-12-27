@@ -370,7 +370,7 @@ ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags,
 
 ### TIME_WAIT
 
-在 TCP 连接断开进行四次挥手后，有一段时间 `TIME_WAIT` 后才会完全关闭，这是为了等待由于种种原因而产生的异常的报文自行消失的时间而设计的。因为这种报文的连接四元组与正常的完全相同，会干扰正常的 TCP 连接。但是这个 `TIME_WAIT` 同时也会占用服务器的端口和内存资源，所以需要对它进行优化。（在 TCP 拓展规范中有时间戳，通过时间戳可以判断是否为异常的报文）
+在 TCP 连接断开进行四次挥手后，有一段时间 `TIME_WAIT` 后才会完全关闭，这是为了等待~~由于种种原因而产生的~~异常的报文自行消失的时间而设计的。因为这种报文的连接四元组与正常的完全相同，会干扰正常的 TCP 连接。但是这个 `TIME_WAIT` 同时也会占用服务器的端口和内存资源，所以需要对它进行优化。（在 TCP 拓展规范中有时间戳，通过时间戳可以判断是否为异常的报文）
 
 - 调整 `net.ipv4.tcp_tw_reuse` 参数使得在可行的情况下可以复用 TIME_WAIT 状态的连接，比如连接是客户端发起的。
 
@@ -384,21 +384,21 @@ ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags,
 
 #### [close](https://man7.org/linux/man-pages/man2/close.2.html)
 
-使用 `close` 关闭套接字的 fd，如果是 fd 的最后一个引用，才会真正释放相关资源。
+使用 `close` 函数会关闭 fd，使其不再引用任何文件（引用计数减 1），并且可以重用。对于关闭套接字的 fd，如果是 fd 的最后一个引用，才会真正释放相关资源，并且关闭 TCP 输入输出的数据流。内核把套接字设置为不可读，无法再从套接字读取数据。内核把缓冲区的数据发送完毕后会发送 `FIN`，无法再从套接字写入数据。此时另一端如果继续发送数据将会返回 `RST`。
 
 返回 `0` 代表成功，`-1` 代表出错
-
-- [How is "multiple file descriptors refer to the same socket" created?](https://unix.stackexchange.com/questions/621373/how-is-multiple-file-descriptors-refer-to-the-same-socket-created)
-- [How Linux creates sockets and counts them](https://ops.tips/blog/how-linux-creates-sockets/)
 
 ```cpp
 #include <unistd.h>
 int close(int fd);
 ```
 
+- [How is "multiple file descriptors refer to the same socket" created?](https://unix.stackexchange.com/questions/621373/how-is-multiple-file-descriptors-refer-to-the-same-socket-created)
+- [How Linux creates sockets and counts them](https://ops.tips/blog/how-linux-creates-sockets/)
+
 #### [shutdown](https://man7.org/linux/man-pages/man2/shutdown.2.html)
 
-使用 `shutdown` 函数会关闭 fd 关联的套接字上的全部或部分全双工连接被关闭，参数 `how` 有三种选项 `SHUT_RD` `SHUT_WR` `SHUT_RDWR`
+`shutdown` 则是 `sys/socket.h` 下的函数，使用 `shutdown` 函数会让 fd 关联的套接字上的全部或部分全双工连接被直接关闭（而不是引用计数减 1），并且不会释放套接字和相关资源。参数 `how` 有三种选项 `SHUT_RD` `SHUT_WR` `SHUT_RDWR`（值分别对应 0、1、2）来控制关闭读、关闭写和关闭读写（即前面描述的“全部或部分全双工”）。
 
 返回 `0` 代表成功，`-1` 代表出错
 
@@ -406,6 +406,8 @@ int close(int fd);
 #include <sys/socket.h>
 int shutdown(int sockfd, int how);
 ```
+
+客户端执行 `shutdown(fd, SHUT_WR)` 后不再发送数据，仍然可以读取服务器未发送完的数据，等读取到 `EOF`（zero indicates end of file）代表服务器也关闭再进行退出。
 
 ## 测试
 
