@@ -22,6 +22,7 @@
   - [关闭 TCP](#关闭-tcp)
     - [close](#close)
     - [shutdown](#shutdown)
+  - [检测连接状态](#检测连接状态)
 - [测试](#测试)
 - [参考](#参考)
 
@@ -408,6 +409,12 @@ int shutdown(int sockfd, int how);
 ```
 
 客户端执行 `shutdown(fd, SHUT_WR)` 后不再发送数据，仍然可以读取服务器未发送完的数据，等读取到 `EOF`（zero indicates end of file）代表服务器也关闭再进行退出。
+
+### 检测连接状态
+
+`keepalive` 相关参数 `net.ipv4.tcp_keepalive_time`、`net.ipv4.tcp_keepalive_intvl`、`net.ipv4.tcp_keepalve_probes`，默认值分别为 7200、75、9，意为 7200 秒后每 75 秒探测一次，探测 9 次后才能认为连接已经失效了。
+
+此外可以自己在应用层实现一个心跳机制。
 
 ## 测试
 
