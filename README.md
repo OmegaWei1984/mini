@@ -416,6 +416,8 @@ int shutdown(int sockfd, int how);
 
 此外可以自己在应用层实现一个心跳机制。
 
+
+
 ## 测试
 
 test
@@ -429,3 +431,4 @@ g++ -DBOOST_TEST_DYN_LINK test.cpp -lboost_unit_test_framework
 
 - [使用socket()函数创建套接字](https://xiaoxiami.gitbook.io/linux-server/socket/socket-xiang-guan-han-shu/shi-yong-socket-han-shu-chuang-jian-tao-jie-zi)
 - [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/html/)
+- [Fixed width integer types (since C++11)](https://en.cppreference.com/w/cpp/types/integer)
