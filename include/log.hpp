@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cstring>
 
 void errorOutput(int status, int errno_, const std::string &msg)
 {
