@@ -6,3 +6,6 @@ message(STATUS ${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 add_executable(uds_svr example/uds_svr.cpp)
 add_executable(uds_cli example/uds_cli.cpp)
+
+add_executable(heartbeats_svr example/heartbeat_svr.cpp)
+add_executable(heartbeats_cli example/heartbeat_cli.cpp)

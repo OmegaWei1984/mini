@@ -6,8 +6,8 @@
 #include <string>
 #include <unistd.h>
 
-#include "include/log.hpp"
-#include "include/msg.hpp"
+#include "log.hpp"
+#include "msg.hpp"
 
 #define MAXLINE 4096
 #define KEEP_ALIVE_TIME 10
@@ -59,7 +59,7 @@ int main(void)
                 return 0;
             }
             std::cout << "sending heartbeat " << heartbeats << std::endl;
-            msg.type = htonl(MSG_PING);
+            msg.type = htons(MSG_PING);
             r = send(sockFd, (char *)&msg, sizeof(msg), 0);
             if (r < 0)
             {
