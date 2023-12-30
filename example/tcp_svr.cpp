@@ -51,11 +51,11 @@ void readdata(int fd)
 int main(void)
 {
     int listenFd = socket(AF_INET, SOCK_STREAM, 0);
-    sockaddr_in srvsock;
-    srvsock.sin_family = AF_INET;
-    srvsock.sin_port = htons(5001);
-    srvsock.sin_addr.s_addr = htonl(INADDR_ANY);
-    bind(listenFd, (sockaddr *) &srvsock, sizeof(srvsock));
+    sockaddr_in svrsock;
+    svrsock.sin_family = AF_INET;
+    svrsock.sin_port = htons(5001);
+    svrsock.sin_addr.s_addr = htonl(INADDR_ANY);
+    bind(listenFd, (sockaddr *) &svrsock, sizeof(svrsock));
     listen(listenFd, 1024);
 
     sockaddr_in cliaddr;

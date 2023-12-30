@@ -10,10 +10,10 @@ int main(void)
 {
     int listenFd = socket(AF_LOCAL, SOCK_STREAM, 0);
     unlink(PATH);
-    sockaddr_un srvaddr;
-    srvaddr.sun_family = AF_LOCAL;
-    strcpy(srvaddr.sun_path, PATH);
-    int res = bind(listenFd, (sockaddr *) &srvaddr, sizeof(srvaddr));
+    sockaddr_un svraddr;
+    svraddr.sun_family = AF_LOCAL;
+    strcpy(svraddr.sun_path, PATH);
+    int res = bind(listenFd, (sockaddr *) &svraddr, sizeof(svraddr));
     if (res < 0) {
         errorOutput(1, errno, "bind failed");
         return 1;

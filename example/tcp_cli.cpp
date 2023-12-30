@@ -28,13 +28,13 @@ void send_data(int sockfd)
 
 int main(int argc, char **argv)
 {
-    sockaddr_in srvaddr;
+    sockaddr_in svraddr;
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    srvaddr.sin_family = AF_INET;
-    srvaddr.sin_port = htons(5001);
-    srvaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    svraddr.sin_family = AF_INET;
+    svraddr.sin_port = htons(5001);
+    svraddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     output("start connect");
-    int res = connect(sockfd, (sockaddr *) &srvaddr, sizeof(srvaddr));
+    int res = connect(sockfd, (sockaddr *) &svraddr, sizeof(svraddr));
     if (res < 0) {
         errorOutput(1, errno, "connect failed");
         return 0;

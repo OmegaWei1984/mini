@@ -4,5 +4,5 @@ project(example CXX)
 message(STATUS ${PROJECT_SOURCE_DIR})
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
-add_executable(uds_srv example/uds_srv.cpp)
+add_executable(uds_svr example/uds_svr.cpp)
 add_executable(uds_cli example/uds_cli.cpp)

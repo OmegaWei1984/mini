@@ -12,11 +12,11 @@ int main(void) {
         errorOutput(1, errno, "create socket failed");
         return 1;
     }
-    sockaddr_un srvaddr;
-    srvaddr.sun_family = AF_LOCAL;
-    strcpy(srvaddr.sun_path, PATH);
+    sockaddr_un svraddr;
+    svraddr.sun_family = AF_LOCAL;
+    strcpy(svraddr.sun_path, PATH);
 
-    if (connect(sockFd, (sockaddr *) &srvaddr, sizeof(srvaddr)) < 0) {
+    if (connect(sockFd, (sockaddr *) &svraddr, sizeof(svraddr)) < 0) {
         errorOutput(1, errno, "connect failed");
         return 1;
     }
