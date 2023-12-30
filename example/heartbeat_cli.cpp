@@ -46,7 +46,8 @@ int main(void)
     {
         readmask = allreads;
         int r = select(sockFd + 1, &readmask, nullptr, nullptr, &tv);
-        if (r < 0) {
+        if (r < 0)
+        {
             errorOutput(1, errno, "select failed");
             return 1;
         }
@@ -59,7 +60,31 @@ int main(void)
             }
             std::cout << "sending heartbeat " << heartbeats << std::endl;
             msg.type = htonl(MSG_PING);
-            
+            r = send(sockFd, (char *)&msg, sizeof(msg), 0);
+            if (r < 0)
+            {
+                errorOutput(1, errno, "send failed");
+                return 1;
+            }
+            tv.tv_sec = KEEP_ALIVE_INTERVAL;
+            continue;
+        }
+        if (FD_ISSET(sockFd, &readmask))
+        {
+            n = read(sockFd, recv, MAXLINE);
+            if (n < 0)
+            {
+                errorOutput(1, errno, "read error");
+                return 1;
+            }
+            else if (n == 0)
+            {
+                errorOutput(1, 0, "server terminated");
+                return 1;
+            }
+            std::cout << "recv heartbeat" << std::endl;
+            heartbeats = 0;
+            tv.tv_sec = KEEP_ALIVE_TIME;
         }
     }
 
