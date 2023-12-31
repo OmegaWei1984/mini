@@ -25,6 +25,7 @@
   - [检测连接状态](#检测连接状态)
   - [TCP 传输保障](#tcp-传输保障)
   - [readv 和 writev 函数](#readv-和-writev-函数)
+  - [udp connect](#udp-connect)
 - [测试](#测试)
 - [参考](#参考)
 
@@ -441,6 +442,10 @@ struct iovec {
 ssize_t writev(int filedes, const struct iovec *iov, int iovcnt)
 ssize_t readv(int filedes, const struct iovec *iov, int iovcnt);
 ```
+
+### udp connect
+
+`SOCK_DGRAM` 类型的套接字也可以使用 `connect` 函数。进行 `connect` 时并不会进行通信，而是将 UDP 套接字和服务器的地址端口进行了绑定。当服务端不可达时，没有进行 `connect` 的套接字没有关联，当收到 ICMP 不可达报文时无法得知是哪个套接字不可达，进行了 `connect` 的套接字会返回 `Connection refused` 的错误。
 
 ## 测试
 
