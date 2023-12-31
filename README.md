@@ -384,6 +384,31 @@ ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags,
 - 调低 `TCP_TIMEWAIT_LEN`，这个参数控制 `TIME_WAIT` 的时长，但是调整这个参数需要重新编译内核。
 - SO_LINGER 套接字选项的设置，`l_onoff` 非 0 ，在 close 后会经过 `l_linger` 设置的计时结束后发送 RST，这个连接会跳过四次挥手和 `TIME_WAIT`，但是这样会导致还在排队的数据不会被发送完毕，被关闭的一端没有经过挥手，在 recv 时才能得知被 RST 了。
 
+下面是一个实验：
+
+启动后客户端连接上去，此时状态为 `ESTABLISHED`
+
+```bash
+tcp        0      0 127.0.0.1:5001          127.0.0.1:41332         ESTABLISHED 6667/./tcp_svr
+tcp        0      0 127.0.0.1:41332         127.0.0.1:5001          ESTABLISHED 6671/telnet
+```
+
+使用 `ctrl+c` 关闭了服务端，状态进入 `TIME_WAIT`
+
+```bash
+tcp        0      0 127.0.0.1:5001          127.0.0.1:41332         TIME_WAIT   -
+```
+
+此时立即再启动服务端，使用客户端连接会返回 "Connection refused"，并且此时状态仍然是 `TIME_WAIT`
+
+```bash
+tcp        0      0 127.0.0.1:5001          127.0.0.1:41332         TIME_WAIT   -
+
+telnet: Unable to connect to remote host: Connection refused
+```
+
+等待两个 MSL（[Maximum segment lifetime](https://en.wikipedia.org/wiki/Maximum_segment_lifetime)）后才能再正常启动服务端。
+
 ### 关闭 TCP
 
 #### [close](https://man7.org/linux/man-pages/man2/close.2.html)
