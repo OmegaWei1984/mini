@@ -23,6 +23,8 @@
     - [close](#close)
     - [shutdown](#shutdown)
   - [检测连接状态](#检测连接状态)
+  - [TCP 传输保障](#tcp-传输保障)
+  - [readv 和 writev 函数](#readv-和-writev-函数)
 - [测试](#测试)
 - [参考](#参考)
 
@@ -415,6 +417,30 @@ int shutdown(int sockfd, int how);
 `keepalive` 相关参数 `net.ipv4.tcp_keepalive_time`、`net.ipv4.tcp_keepalive_intvl`、`net.ipv4.tcp_keepalve_probes`，默认值分别为 7200、75、9，意为 7200 秒后每 75 秒探测一次，探测 9 次后才能认为连接已经失效了。
 
 此外可以自己在应用层实现一个心跳机制。与 `keepalive` 类似但是由应用层发起一个 `ping` 消息进行探测，另一端收到后回复 `pong` 消息，如果多次间隔的 `ping` 都没有收到回复就可以认为连接状态异常。
+
+### TCP 传输保障
+
+收发端能处理的流量不是对等的，需要通过发送窗口和接收窗口来控制。同样的在网络传输的每个环节的能力也是有限的，需要通过拥塞控制避免传输中的问题在网络中被放大。
+
+- [TCP 重传、滑动窗口、流量控制、拥塞控制](https://www.xiaolincoding.com/network/3_tcp/tcp_feature.html)
+
+TCP 缓冲区中的数据能否真正发出取决于 “发送窗口” 和 “拥塞窗口” 的大小。
+
+- 糊涂窗口综合症 发送窗口过小、应用为交互式、大量 ACK 报文 -> 每次只能发送很少的数据，导致带宽消耗真实要传输的数据之外 -> Nagle 算法、延时 ACK、写操作合并
+
+### readv 和 writev 函数
+
+`v` 是向量 `vector` 的意思
+
+```cpp
+struct iovec {
+  void *iov_base; /* starting address of buffer */
+  size_t　iov_len; /* size of buffer */
+};
+
+ssize_t writev(int filedes, const struct iovec *iov, int iovcnt)
+ssize_t readv(int filedes, const struct iovec *iov, int iovcnt);
+```
 
 ## 测试
 
