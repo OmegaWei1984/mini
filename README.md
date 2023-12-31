@@ -414,9 +414,7 @@ int shutdown(int sockfd, int how);
 
 `keepalive` 相关参数 `net.ipv4.tcp_keepalive_time`、`net.ipv4.tcp_keepalive_intvl`、`net.ipv4.tcp_keepalve_probes`，默认值分别为 7200、75、9，意为 7200 秒后每 75 秒探测一次，探测 9 次后才能认为连接已经失效了。
 
-此外可以自己在应用层实现一个心跳机制。
-
-
+此外可以自己在应用层实现一个心跳机制。与 `keepalive` 类似但是由应用层发起一个 `ping` 消息进行探测，另一端收到后回复 `pong` 消息，如果多次间隔的 `ping` 都没有收到回复就可以认为连接状态异常。
 
 ## 测试
 
