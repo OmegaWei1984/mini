@@ -3,7 +3,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "include/log.hpp"
+#include "log.hpp"
 
 size_t readn(int fd, void *buffer, size_t size)
 {
@@ -43,6 +43,7 @@ void readdata(int fd)
        if ((len = read(fd, &buff, 1024)) == 0) {
             return;
        }
+       std::cout << "recv: " << len << " bytes " << buff << std::endl;
        time++;
        usleep(1000);
     }
