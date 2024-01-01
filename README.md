@@ -11,6 +11,7 @@
       - [开始 listen](#开始-listen)
       - [accept 客户端的连接请求](#accept-客户端的连接请求)
       - [客户端 connect](#客户端-connect)
+    - [网络字节序](#网络字节序)
     - [TCP 三次握手流程](#tcp-三次握手流程)
     - [TCP 四次挥手](#tcp-四次挥手)
   - [使用套接字收发数据](#使用套接字收发数据)
@@ -26,6 +27,7 @@
   - [TCP 传输保障](#tcp-传输保障)
   - [readv 和 writev 函数](#readv-和-writev-函数)
   - [udp connect](#udp-connect)
+  - [TCP 是流](#tcp-是流)
 - [测试](#测试)
 - [参考](#参考)
 
@@ -268,6 +270,17 @@ connect 的常见错误
   - 比如端口设置错误，需要使用 `htons` 进行转换
     > htonl, htons, htonll, ntohl, ntohs, ntohll – convert values between host and network byte order
 
+#### 网络字节序
+
+网络协议传输采用的是大端字节序，而计算机处理器体系采用的是小端字节序，所以需要进行转换。以下是 POSIX 标准的转换函数：
+
+```c
+uint16_t htons (uint16_t hostshort)
+uint16_t ntohs (uint16_t netshort)
+uint32_t htonl (uint32_t hostlong)
+uint32_t ntohl (uint32_t netlong)
+```
+
 #### TCP 三次握手流程
 ```
 socket      │                │    socket,bind,listen
@@ -471,6 +484,19 @@ ssize_t readv(int filedes, const struct iovec *iov, int iovcnt);
 ### udp connect
 
 `SOCK_DGRAM` 类型的套接字也可以使用 `connect` 函数。进行 `connect` 时并不会进行通信，而是将 UDP 套接字和服务器的地址端口进行了绑定。当服务端不可达时，没有进行 `connect` 的套接字没有关联，当收到 ICMP 不可达报文时无法得知是哪个套接字不可达，进行了 `connect` 的套接字会返回 `Connection refused` 的错误。
+
+### TCP 是流
+
+虽然 “TCP 粘包” 的说法是错的，但是数据是流，不会按照 `send` 时分界，“在应用时需要处理” 的问题是真实的。
+
+- [怎么解决TCP网络传输「粘包」问题？](https://www.zhihu.com/question/20210025)
+- [如何理解是 TCP 面向字节流协议？](https://xiaolincoding.com/network/3_tcp/tcp_stream.html#%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E5%AD%97%E8%8A%82%E6%B5%81)
+
+应用对数据的拆分有三种常见的方法：
+
+- 定长，不足的长度用别的字符填充
+- 定义特殊的边界字符
+- 通过字段定义消息长度
 
 ## 测试
 
